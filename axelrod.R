@@ -12,8 +12,8 @@ seed_array <- function(n_of_features) {
     data = NA, 
     dim = c(10, 10, length(features)), 
     dimnames = list(
-      y_coord = NULL,
-      x_coord = NULL,
+      y_height = NULL,
+      x_width = NULL,
       feature = features
     )
   )
@@ -53,12 +53,21 @@ subset(x = , subset = TRUE, select = 1:10, drop = FALSE)
 ##function needs a and x y cor and result of select_site, produce list of vectors, 
 #each give name "south, west..", we return list
 
+site <- select_site(a)
+
 find_neighbors <- function(a, site){
-  if (site$x_cor+1 | site$x_cor-1){
-    
-  }
-  
-  
-  
+  # create all neighbors, including impossible
+  fake_neighbors <- list(
+    north = site + c(-1, 0),
+    west = site + c(0, 1),
+    south = site + c(1, 0),
+    east = site + c(0, -1)
+  )
+  # find impossible neighbors
+  existing_neighbors <- sapply(X = fake_neighbors, FUN = function(x) {
+    all(x <= dim(a)[c(1, 2)])
+  })
+  neighbors <- fake_neighbors[existing_neighbors]
+  return(neighbors)
 }
 
