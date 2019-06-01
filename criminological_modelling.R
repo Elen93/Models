@@ -9,19 +9,27 @@ choose_Strategy <- function(ind){
 
 ##1=Paper, 2=Scissors, 3=Rock
 
-
 playStrategy <- function(ind){
-  if(ind$strategy[1] == ind$strategy[2]) {} 
-  else{
-    if(any(ind$strategy == 3) && any(ind$strategy == 1)) {
-      tmp <- ind[ind$strategy == 1, "id"] 
-      ind[tmp, "num_wins"] <- ind[tmp, "num_wins"] + 1
-    }
-    else{
-      tmp <- which(ind[, "strategy"]== max(ind[, "strategy"]))
-      ind[tmp, "num_wins"] <- ind[tmp, "num_wins"] + 1
+  if (ind$strategy[1] == ind$strategy[2]) {
+    # same strategies, it's a tie
+  } else {
+    if (any(ind$strategy == 3) && any(ind$strategy == 1)) {
+      # this is the special case of rock over paper
+      # figure out who of the two IS the winner
+      winner_id <- ind[ind$strategy == 1, "id"]
+      ind <- increment_winner(ind = ind, winner_id = winner_id)
+    } else {
+      # find index for higher strategy
+      # index also happens to be winner_id as per above
+      winner_id <- which(ind[, "strategy"] == max(ind[, "strategy"]))
+      ind <- increment_winner(ind = ind, winner_id = winner_id)
     }
   }
+  return(ind)
+}
+
+increment_winner <- function(ind, winner_id) {
+  ind[winner_id, "num_wins"] <- ind[winner_id, "num_wins"] + 1
   return(ind)
 }
 
