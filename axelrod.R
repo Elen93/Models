@@ -35,7 +35,30 @@ seed_array <- function(n_of_features) {
 a <- seed_array(n_of_features = length(features))
 
 # subset into the array
-a[1, 2, 5]
+a[select_site(a)["y_cor"],select_site(a)["x_cor"],]
 
 # sample
-sample(1:10)
+
+select_site <- function(a){
+  x_cor <- sample(x = dim(a)[2], size = 1)
+  y_cor <- sample(x = dim(a)[1], size = 1)
+  site <- c(x_cor = x_cor, y_cor = y_cor)
+  return(site)
+} 
+
+
+subset.default(x = a, subset = TRUE)
+subset(x = , subset = TRUE, select = 1:10, drop = FALSE)
+
+##function needs a and x y cor and result of select_site, produce list of vectors, 
+#each give name "south, west..", we return list
+
+find_neighbors <- function(a, site){
+  if (site$x_cor+1 | site$x_cor-1){
+    
+  }
+  
+  
+  
+}
+
