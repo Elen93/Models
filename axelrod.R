@@ -134,24 +134,26 @@ iterate <- function(features, runs){
   return(a)
 }
 
-results <- iterate(features, runs = 1)
+results <- iterate(features, runs = 10)
 ###what we had for the looping
 #for (i in 1:10000) {
 #  a <- one_iteration(a)
 #}
 
-df <- reshape2::melt(data = results, value.name = "trait")
-df$x_width <- as.integer(df$x_width)
-df$y_height <- as.integer(df$y_height)
-df$trait <- as.factor(df$trait)
-library(ggplot2)
-ggplot(
-  data = df, 
-  mapping = aes(
-    x = x_width, 
-    y = y_height, 
-    fill = trait
-  )
-) + 
+plot_one_iter <- function(a) {
+  df <- reshape2::melt(data = a, value.name = "trait")
+  df$x_width <- as.integer(df$x_width)
+  df$y_height <- as.integer(df$y_height)
+  df$trait <- as.factor(df$trait)
+  library(ggplot2)
+  ggplot(
+    data = df, 
+    mapping = aes(
+      x = x_width, 
+      y = y_height, 
+      fill = trait
+    )
+  ) + 
   geom_raster() + 
   facet_wrap(vars(feature))
+}
