@@ -6,7 +6,7 @@ seed_features <- function(n_of_features) {
   sample(x = 0:9, size = n_of_features, replace = TRUE)
 }
 
-seed_array <- function(n_of_features) {
+seed_array <- function(features) {
   # create empty array
   a <- array(
     data = NA, 
@@ -17,9 +17,9 @@ seed_array <- function(n_of_features) {
       feature = features
     )
   )
-  
+ n_of_features <- length(features) 
   # fill in empty array with initial traits
-  a <- apply(
+ a2 <- apply(
     X = a, 
     MARGIN = c(1, 2), 
     FUN = function(x) {
@@ -28,14 +28,10 @@ seed_array <- function(n_of_features) {
   )
   
   # turn array in the right orientation
-  a <- aperm(a = a, perm = c(3, 2, 1))
-  return(a)
+  a2 <- aperm(a = a2, perm = c(3, 2, 1))
+  dimnames(a2) <- dimnames(a)
+  return(a2)
 }
-
-a <- seed_array(n_of_features = length(features))
-
-# subset into the array
-a[select_site(a)["y_cor"],select_site(a)["x_cor"],]
 
 # sample
 
@@ -47,13 +43,11 @@ select_site <- function(a){
 } 
 
 
-subset.default(x = a, subset = TRUE)
-subset(x = , subset = TRUE, select = 1:10, drop = FALSE)
 
 ##function needs a and x y cor and result of select_site, produce list of vectors, 
 #each give name "south, west..", we return list
 
-site <- select_site(a)
+
 
 find_neighbors <- function(a, site){
   # create all neighbors, including impossible
@@ -71,3 +65,77 @@ find_neighbors <- function(a, site){
   return(neighbors)
 }
 
+##find the randomly selected neighbor and subset
+
+
+random_neighbor <- function(neighbors){
+  the_neighbor <- sample(x = neighbors, size = 1)
+  return(the_neighbor)
+}
+
+#its a list
+
+##comparing
+find_overlap <- function(a, site, the_neighbor) {
+  overlap <- a[the_neighbor[[1]][2], the_neighbor[[1]][1],] ==  a[site[2],site[1],]
+  return(overlap)
+}
+
+#probability of interaction
+
+find_p_int <- function(overlap, features) {
+  p <- sum(overlap)/length(features)
+  return(p)
+}
+
+
+make_int <- function(p, a, site, overlap, the_neighbor){
+  inter_yn <- sample(x = c(TRUE, FALSE), size=1, prob=c(p, 1-p))
+  if(inter_yn & !any(overlap)){
+    changed_feature <- sample(which(!overlap), size = 1)
+    a[site["y_cor"], site["x_cor"], changed_feature] <- a[the_neighbor[[1]]["y_cor"], the_neighbor[[1]]["x_cor"], changed_feature]
+  }
+  return(a)
+}
+
+###use the overlap object, and sample again, over those tha are 
+
+
+
+#function:one iteration for the game
+#another function: run it 1000 times(prob a loop)
+
+
+
+
+one_iteration <- function(a){
+ features <- dimnames(x = a)$feature
+ site <- select_site(a = a)
+ neighbors <- find_neighbors(a =a, site = site)
+ the_neighbor <- random_neighbor(neighbors = neighbors)
+ overlap <- find_overlap(a = a, site = site, the_neighbor = the_neighbor)
+ p <- find_p_int(overlap = overlap, features = features)
+ a <- make_int(p = p, a = a, site = site, the_neighbor = the_neighbor, overlap = overlap)
+ return(a)
+}
+
+##looping
+
+setup <- function(features){
+  a <- seed_array(features)
+  return(a)
+}
+
+iterate <- function(features, runs){
+  a <- setup(features)
+  for (i in 1:runs) {
+    a <- one_iteration(a)
+  }
+  return(a)
+}
+
+results <- iterate(features, runs = 20)
+###what we had for the looping
+#for (i in 1:10000) {
+#  a <- one_iteration(a)
+#}

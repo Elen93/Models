@@ -145,3 +145,10 @@ replicate(100, sample(coin, 6, replace = TRUE ))
 a = replicate(100, length(sample(coin, 6, replace = TRUE)[y == "Tail"]))
 mean(a)
 
+#####not needed, was for axelrod modell
+
+if p >=0.2 {
+  changed_feature <- sample(which(!overlap), size = 1)
+  a[site["y_cor"], site["x_cor"], changed_feature] <- a[the_neighbor[[1]]["y_cor"], the_neighbor[[1]]["x_cor"], changed_feature]
+}
+}
